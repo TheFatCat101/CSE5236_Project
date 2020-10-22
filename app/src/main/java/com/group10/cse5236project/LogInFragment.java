@@ -11,14 +11,15 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 public class LogInFragment extends Fragment implements View.OnClickListener {
+    private Button logInButton, newAccountButton, exitButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedStateInstance) {
         View v = inflater.inflate(R.layout.fragment_log_in, container, false);
 
-        Button logInButton = v.findViewById(R.id.log_in_button);
-        Button newAccountButton = v.findViewById(R.id.new_account_button);
-        Button exitButton = v.findViewById(R.id.login_exit_button);
+        logInButton = v.findViewById(R.id.log_in_button);
+        newAccountButton = v.findViewById(R.id.new_account_button);
+        exitButton = v.findViewById(R.id.login_exit_button);
         if (logInButton != null) {
             logInButton.setOnClickListener(this);
         }
@@ -28,7 +29,6 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
         if (exitButton != null) {
             exitButton.setOnClickListener(this);
         }
-
         return v;
     }
 

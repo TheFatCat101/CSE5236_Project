@@ -17,19 +17,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/username_hint"
-        android:inputType="text" />
+        android:inputType="text"
+        android:id="@+id/username"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/password_hint"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:id="@+id/password"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/confirm_password_hint"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:id="@+id/confirm_password"/>
 
     <Button
         android:id="@+id/create_button"
