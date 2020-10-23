@@ -21,16 +21,17 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LogInFragment extends Fragment implements View.OnClickListener {
 
-    private EditText mUsernameEditText;
-    private EditText mPasswordEditText;
+    private boolean mValidLogIn;
 
-    private Button mLogInButton;
-    private Button mNewAccountButton;
-    private Button mExitButton;
+    private EditText mUsernameEditText, mPasswordEditText;
+
+    private Button mLogInButton, mNewAccountButton, mExitButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedStateInstance) {
         View v = inflater.inflate(R.layout.fragment_log_in, container, false);
+
+        mValidLogIn = false;
 
         mUsernameEditText = v.findViewById(R.id.log_in_username_field);
         mPasswordEditText = v.findViewById(R.id.log_in_password_field);
@@ -58,7 +59,10 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
         if (activity != null) {
             switch (v.getId()) {
                 case R.id.log_in_button:
-                    dbTestRead();
+                    logIn();
+                    if (mValidLogIn) {
+                        // Go to screen right after log in...
+                    }
                     break;
                 case R.id.new_account_button:
                     FragmentManager fm = getFragmentManager();
@@ -72,33 +76,37 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private boolean logInIsValid() {
-        boolean isValid = false;
+    private void logIn() {
         String username = mUsernameEditText.getText().toString().trim();
-        String password = mPasswordEditText.getText().toString().trim();
+        final String password = mPasswordEditText.getText().toString().trim();
         if (!username.equals("") && !password.equals("")) {
-            DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Accounts").child(username);
-            db.addListenerForSingleValueEvent(new ValueEventListener() {
+            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("Accounts").child(username);
+            dbRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    // Not done
+                    if (snapshot.getValue() != null) {
+                        if (password.equals(snapshot.getValue().toString())) {
+                            mValidLogIn = true;
+                            Toast.makeText(getActivity(), R.string.successful_log_in_toast, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getActivity(), R.string.incorrect_password_toast, Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), R.string.username_not_found_toast, Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    if (error.getCode() == DatabaseError.DISCONNECTED) {
-                        Toast.makeText(getActivity(), "DB disconnected!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(getActivity(), "Log in error!", Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(getActivity(), R.string.log_in_error_toast, Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
-            Toast.makeText(getActivity(), "Must enter a username and password!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.no_username_password_toast, Toast.LENGTH_SHORT).show();
         }
-        return isValid;
     }
 
+    // Below methods are used for testing.
     private void dbTestRead() {
         final String[] password = new String[1];
         DatabaseReference db = FirebaseDatabase.getInstance().getReference("Accounts").child("username3");
