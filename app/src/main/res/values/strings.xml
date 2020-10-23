@@ -15,4 +15,5 @@
     <string name="incorrect_password_toast">Password is incorrect!</string>
     <string name="successful_log_in_toast">Successful log in!</string>
     <string name="log_in_error_toast">Error logging in!</string>
+    <string name="new_account_error_toast">Error Spawning new account!</string>
 </resources>
