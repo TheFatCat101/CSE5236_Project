@@ -19,25 +19,26 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class NewAccountFragment extends Fragment implements View.OnClickListener {
-    private Button mcreateButton, mcancelButton;
-    EditText musername, mpassword, mconfirmPassword;
+
+    private Button mCreateButton, mCancelButton;
+    private EditText mUsername, mPassword, mConfirmPassword;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_new_account, container, false);
 
-        mcreateButton = v.findViewById(R.id.create_button);
-        mcancelButton = v.findViewById(R.id.cancel_button);
+        mCreateButton = v.findViewById(R.id.create_button);
+        mCancelButton = v.findViewById(R.id.cancel_button);
 
-        musername = v.findViewById(R.id.username);
-        mpassword = v.findViewById(R.id.password);
-        mconfirmPassword = v.findViewById(R.id.confirm_password);
+        mUsername = v.findViewById(R.id.username);
+        mPassword = v.findViewById(R.id.password);
+        mConfirmPassword = v.findViewById(R.id.confirm_password);
 
-        if (mcreateButton != null) {
-            mcreateButton.setOnClickListener(this);
+        if (mCreateButton != null) {
+            mCreateButton.setOnClickListener(this);
         }
-        if (mcancelButton != null) {
-            mcancelButton.setOnClickListener(this);
+        if (mCancelButton != null) {
+            mCancelButton.setOnClickListener(this);
         }
 
         return v;
@@ -49,11 +50,11 @@ public class NewAccountFragment extends Fragment implements View.OnClickListener
         if (activity != null) {
             switch (v.getId()) {
                 case R.id.create_button:
-                    String username = musername.getText().toString().trim();
-                    String password = mpassword.getText().toString().trim();
-                    String passwordConfirm = mconfirmPassword.getText().toString().trim();
+                    String username = mUsername.getText().toString().trim();
+                    String password = mPassword.getText().toString().trim();
+                    String passwordConfirm = mConfirmPassword.getText().toString().trim();
                     if (username.equals("") || password.equals("")) {
-                        Toast.makeText(getActivity(), "Invalid Username & password", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.no_username_password_toast, Toast.LENGTH_SHORT).show();
                         break;
                     }
 
@@ -61,7 +62,7 @@ public class NewAccountFragment extends Fragment implements View.OnClickListener
                     //strong enough (no req)
                     //password matches confirm_password
                     if(!password.equals(passwordConfirm)){
-                        Toast.makeText(getActivity(), "Passwords do NOT match", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.passwords_no_match_toast,Toast.LENGTH_SHORT).show();
                         break;
                     }
 
@@ -78,23 +79,25 @@ public class NewAccountFragment extends Fragment implements View.OnClickListener
     //method return false if username already exists
     //return true when username does not exist and has been added by our method below
     private void addUserInfo(String username, final String password) {
-            final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("Accounts").child(username);
-            dbRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.getValue() != null) {
-                        Toast.makeText(getActivity(), "Username already claimed", Toast.LENGTH_SHORT).show();
-                    } else {
-                        //push to dbRef
-                        //new (username, password) pair add to db
-                        dbRef.push().setValue(password);
-                    }
+        final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("Accounts").child(username);
+        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.getValue() != null) {
+                    Toast.makeText(getActivity(), R.string.username_taken_toast, Toast.LENGTH_SHORT).show();
+                } else {
+                    //push to dbRef
+                    //new (username, password) pair add to db
+                    dbRef.setValue(password);
+                    Toast.makeText(getActivity(), R.string.account_created_toast, Toast.LENGTH_SHORT).show();
+                    getActivity().getSupportFragmentManager().popBackStack();
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(getActivity(), R.string.new_account_error_toast, Toast.LENGTH_SHORT).show();
-                }
-            });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getActivity(), R.string.new_account_error_toast, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

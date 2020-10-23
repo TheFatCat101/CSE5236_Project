@@ -10,10 +10,13 @@
     <string name="create_button">CREATE</string>
     <string name="cancel_button">CANCEL</string>
     <string name="exit_button">EXIT</string>
-    <string name="no_username_password_toast">Must enter a username and password!</string>
+    <string name="no_username_password_toast">Must provide a username and password!</string>
     <string name="username_not_found_toast">Username not found!</string>
     <string name="incorrect_password_toast">Password is incorrect!</string>
     <string name="successful_log_in_toast">Successful log in!</string>
+    <string name="account_created_toast">Account successfully created!</string>
     <string name="log_in_error_toast">Error logging in!</string>
-    <string name="new_account_error_toast">Error Spawning new account!</string>
+    <string name="new_account_error_toast">Error creating new account!</string>
+    <string name="username_taken_toast">Username has already been taken!</string>
+    <string name="passwords_no_match_toast">Provided passwords do not match!</string>
 </resources>
