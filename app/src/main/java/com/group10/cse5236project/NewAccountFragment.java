@@ -21,7 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 public class NewAccountFragment extends Fragment implements View.OnClickListener {
 
     private Button mCreateButton, mCancelButton;
-    private EditText mUsername, mPassword, mConfirmPassword;
+    private EditText mUsernameEditText, mPasswordEditText, mConfirmPasswordEditText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -30,9 +30,9 @@ public class NewAccountFragment extends Fragment implements View.OnClickListener
         mCreateButton = v.findViewById(R.id.create_button);
         mCancelButton = v.findViewById(R.id.cancel_button);
 
-        mUsername = v.findViewById(R.id.username);
-        mPassword = v.findViewById(R.id.password);
-        mConfirmPassword = v.findViewById(R.id.confirm_password);
+        mUsernameEditText = v.findViewById(R.id.username);
+        mPasswordEditText = v.findViewById(R.id.password);
+        mConfirmPasswordEditText = v.findViewById(R.id.confirm_password);
 
         if (mCreateButton != null) {
             mCreateButton.setOnClickListener(this);
@@ -50,9 +50,9 @@ public class NewAccountFragment extends Fragment implements View.OnClickListener
         if (activity != null) {
             switch (v.getId()) {
                 case R.id.create_button:
-                    String username = mUsername.getText().toString().trim();
-                    String password = mPassword.getText().toString().trim();
-                    String passwordConfirm = mConfirmPassword.getText().toString().trim();
+                    String username = mUsernameEditText.getText().toString().trim();
+                    String password = mPasswordEditText.getText().toString().trim();
+                    String passwordConfirm = mConfirmPasswordEditText.getText().toString().trim();
                     if (username.equals("") || password.equals("")) {
                         Toast.makeText(getActivity(), R.string.no_username_password_toast, Toast.LENGTH_SHORT).show();
                         break;

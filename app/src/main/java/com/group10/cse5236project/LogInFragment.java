@@ -21,17 +21,12 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LogInFragment extends Fragment implements View.OnClickListener {
 
-    private boolean mValidLogIn;
-
     private EditText mUsernameEditText, mPasswordEditText;
-
     private Button mLogInButton, mNewAccountButton, mExitButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedStateInstance) {
         View v = inflater.inflate(R.layout.fragment_log_in, container, false);
-
-        mValidLogIn = false;
 
         mUsernameEditText = v.findViewById(R.id.log_in_username_field);
         mPasswordEditText = v.findViewById(R.id.log_in_password_field);
@@ -60,9 +55,6 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
             switch (v.getId()) {
                 case R.id.log_in_button:
                     logIn();
-                    if (mValidLogIn) {
-                        // Go to screen right after log in...
-                    }
                     break;
                 case R.id.new_account_button:
                     FragmentManager fm = getFragmentManager();
@@ -77,17 +69,20 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
     }
 
     private void logIn() {
-        String username = mUsernameEditText.getText().toString().trim();
+        final String username = mUsernameEditText.getText().toString().trim();
         final String password = mPasswordEditText.getText().toString().trim();
         if (!username.equals("") && !password.equals("")) {
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("Accounts").child(username);
-            dbRef.addValueEventListener(new ValueEventListener() {
+            dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.getValue() != null) {
                         if (password.equals(snapshot.getValue().toString())) {
-                            mValidLogIn = true;
+                            Account.getInstance().setUsername(username);
                             Toast.makeText(getActivity(), R.string.successful_log_in_toast, Toast.LENGTH_SHORT).show();
+                            FragmentManager fm = getFragmentManager();
+                            Fragment fragment = new AccountSettingsFragment();
+                            fm.beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack("account_settings_fragment").commit();
                         } else {
                             Toast.makeText(getActivity(), R.string.incorrect_password_toast, Toast.LENGTH_SHORT).show();
                         }

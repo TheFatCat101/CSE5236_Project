@@ -2,12 +2,17 @@
     <string name="app_name">CSE5236 Project</string>
     <string name="log_in_title">Log In</string>
     <string name="new_account_title">New Account</string>
+    <string name="account_settings_title">Account Settings</string>
     <string name="username_hint">username</string>
     <string name="password_hint">password</string>
     <string name="confirm_password_hint">confirm password</string>
+    <string name="current_password_hint">current password</string>
+    <string name="new_password_hint">new password</string>
     <string name="log_in_button">LOG IN</string>
     <string name="new_account_button">NEW ACCOUNT</string>
     <string name="create_button">CREATE</string>
+    <string name="update_password_button">UPDATE PASSWORD</string>
+    <string name="delete_account_button">DELETE ACCOUNT</string>
     <string name="cancel_button">CANCEL</string>
     <string name="exit_button">EXIT</string>
     <string name="no_username_password_toast">Must provide a username and password!</string>
@@ -19,4 +24,10 @@
     <string name="new_account_error_toast">Error creating new account!</string>
     <string name="username_taken_toast">Username has already been taken!</string>
     <string name="passwords_no_match_toast">Provided passwords do not match!</string>
+    <string name="password_changed_toast">Password has been changed!</string>
+    <string name="password_change_error_toast">Error changing password!</string>
+    <string name="no_current_new_password_toast">Must provide the current and new passwords!</string>
+    <string name="account_deleted_toast">Account deleted!</string>
+    <string name="account_delete_error_toast">Error deleting account!</string>
+    <string name="no_current_password_toast">Must provide current password!</string>
 </resources>
