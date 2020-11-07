@@ -168,7 +168,7 @@ public class AccountSettingsFragment extends Fragment implements View.OnClickLis
                         dbRef.removeValue();
                         Toast.makeText(getActivity(), R.string.account_deleted_toast, Toast.LENGTH_SHORT).show();
                         Account.getInstance().clear();
-                        getActivity().getSupportFragmentManager().popBackStack();
+                        getActivity().finish();
                     } else {
                         Toast.makeText(getActivity(), R.string.incorrect_password_toast, Toast.LENGTH_SHORT).show();
                     }

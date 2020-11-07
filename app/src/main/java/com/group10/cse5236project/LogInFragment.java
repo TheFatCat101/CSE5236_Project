@@ -2,6 +2,7 @@ package com.group10.cse5236project;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -146,9 +147,13 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
                         if (password.equals(snapshot.getValue().toString())) {
                             Account.getInstance().setUsername(username);
                             Toast.makeText(getActivity(), R.string.successful_log_in_toast, Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getActivity(), MenuActivity.class);
+                            startActivity(intent);
+                            /*
                             FragmentManager fm = getFragmentManager();
-                            Fragment fragment = new AccountSettingsFragment();
-                            fm.beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack("account_settings_fragment").commit();
+                            Fragment fragment = new MainMenuFragment();
+                            fm.beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack("main_menu_fragment").commit();
+                             */
                         } else {
                             Toast.makeText(getActivity(), R.string.incorrect_password_toast, Toast.LENGTH_SHORT).show();
                         }

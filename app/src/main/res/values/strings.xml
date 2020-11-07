@@ -3,6 +3,7 @@
     <string name="log_in_title">Log In</string>
     <string name="new_account_title">New Account</string>
     <string name="account_settings_title">Account Settings</string>
+    <string name="main_menu_title">Main Menu</string>
     <string name="username_hint">username</string>
     <string name="password_hint">password</string>
     <string name="confirm_password_hint">confirm password</string>
@@ -13,6 +14,9 @@
     <string name="create_button">CREATE</string>
     <string name="update_password_button">UPDATE PASSWORD</string>
     <string name="delete_account_button">DELETE ACCOUNT</string>
+    <string name="join_create_button">JOIN / CREATE ROOM</string>
+    <string name="account_settings_button">ACCOUNT SETTINGS</string>
+    <string name="log_out_button">LOG OUT</string>
     <string name="cancel_button">CANCEL</string>
     <string name="exit_button">EXIT</string>
     <string name="no_username_password_toast">Must provide a username and password!</string>
