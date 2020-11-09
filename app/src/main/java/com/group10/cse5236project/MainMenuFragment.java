@@ -110,6 +110,8 @@ public class MainMenuFragment extends Fragment implements View.OnClickListener {
             switch (v.getId()) {
                 case R.id.join_create_button:
                     // To Do
+                    Fragment Cfragment = new SelectChatRoomFragment();
+                    fm.beginTransaction().replace(R.id.fragment_container, Cfragment).addToBackStack("select_chat_room_fragment").commit();
                     break;
                 case R.id.account_settings_button:
                     Fragment fragment = new AccountSettingsFragment();

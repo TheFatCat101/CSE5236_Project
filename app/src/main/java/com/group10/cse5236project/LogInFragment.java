@@ -30,6 +30,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
     private EditText mUsernameEditText, mPasswordEditText;
     private Button mLogInButton, mNewAccountButton, mExitButton;
 
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -137,6 +138,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
 
     private void logIn() {
         final String username = mUsernameEditText.getText().toString().trim();
+        infoClass.getInstance().setData(username);
         final String password = mPasswordEditText.getText().toString().trim();
         if (!username.equals("") && !password.equals("")) {
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("Accounts").child(username);
