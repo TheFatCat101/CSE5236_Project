@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ChatRoomFragment">
+
+    <EditText
+        android:id="@+id/member_to_invite"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:accessibilityLiveRegion="assertive"
+        android:autofillHints="New member name"
+        android:ems="10"
+        android:hint="@string/Member_to_invite"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/invite"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="310dp"
+        android:text="@string/Invite" />
+
+    <EditText
+        android:id="@+id/new_message"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="510dp"
+        android:autofillHints="Message"
+        android:ems="10"
+        android:hint="@string/New_message"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/send"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="310dp"
+        android:layout_marginTop="510dp"
+        android:text="@string/Send" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="440dp"
+        android:layout_marginTop="60dp">
+
+        <TextView
+            android:id="@+id/current_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp" />
+    </ScrollView>
+
+</FrameLayout>

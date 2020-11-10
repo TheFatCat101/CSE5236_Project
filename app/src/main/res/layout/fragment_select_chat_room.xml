@@ -36,8 +36,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="530dp"
+        android:autofillHints="New chat room name"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="@string/Name_new_chat_room" />
+        android:hint="@string/Name_new_chat_room"
+        android:inputType="textPersonName" />
 
 </FrameLayout>

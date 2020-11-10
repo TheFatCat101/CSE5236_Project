@@ -18,7 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,8 +44,8 @@ public class SelectChatRoomFragment extends Fragment implements View.OnClickList
 
     private ArrayAdapter<String> arrayAdapter;
     private ArrayList<String> list_of_rooms = new ArrayList<>();
-    private String currentUser = infoClass.getInstance().getData();
-    private DatabaseReference chatRoomSubtree = FirebaseDatabase.getInstance().getReference().child("Chatrooms");
+    private String currentUser = infoClass.getInstance().getCurrentUserName();
+    private DatabaseReference chatRoomSubtree = FirebaseDatabase.getInstance().getReference("Chatrooms");
 
 
     @Override
@@ -65,31 +65,47 @@ public class SelectChatRoomFragment extends Fragment implements View.OnClickList
         Log.d(TAG, "onCreateView() called");
         View v = inflater.inflate(R.layout.fragment_select_chat_room, container, false);
 
+        getActivity().setTitle("Select chat room");
+
         mCreateChatRoomButton = (Button) v.findViewById(R.id.start_chat_room);
         mChatRoomListView= (ListView) v.findViewById(R.id.chat_room_list);
         mNewChatRoomName = (EditText) v.findViewById(R.id.new_chat_room_name);
 
-        arrayAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,list_of_rooms);
+        arrayAdapter = new ArrayAdapter<String>(this.getActivity(),android.R.layout.simple_list_item_1,list_of_rooms);
 
         mChatRoomListView.setAdapter(arrayAdapter);
 
+        arrayAdapter.notifyDataSetChanged();
+        
         chatRoomSubtree.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                Toast.makeText(getActivity(), currentUser, Toast.LENGTH_SHORT).show();
                 Set<String> set = new HashSet<String>();
-                Iterator i = dataSnapshot.child("Chatrooms").getChildren().iterator();
+                Iterator i = dataSnapshot.getChildren().iterator();
+                //Toast.makeText(getActivity(), String.valueOf(s) , Toast.LENGTH_SHORT).show();
 
                 while (i.hasNext()){
-                    Iterator j = ((DataSnapshot)i.next()).child("Members").getChildren().iterator();
+                    DataSnapshot currentChatRoom = (DataSnapshot)i.next();
+                    String chatRoom = (String) currentChatRoom.child("ChatRoomName").getValue();
+                    Iterator j = currentChatRoom.child("Members").getChildren().iterator();
                     while (j.hasNext()){
                         if(((DataSnapshot)j.next()).getKey().equals(currentUser)){
-                            set.add(((DataSnapshot)j.next()).getKey());
+                            set.add(chatRoom);
                         }
                     }
+                    /*
+                    set.add(chatRoom);
+                    boolean inChatRoom = false;
+                    while (j.hasNext()){
+                        if(((DataSnapshot)j.next()).getKey().equals(currentUser)){
+                            inChatRoom = true;
+                        }
+                    }
+                    if(inChatRoom != true){
+                        set.remove(chatRoom);
+                    }
+                    */
                 }
-
                 list_of_rooms.clear();
                 list_of_rooms.addAll(set);
 
@@ -109,7 +125,7 @@ public class SelectChatRoomFragment extends Fragment implements View.OnClickList
             mChatRoomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //todo: fill in the method
+                    infoClass.getInstance().setCurrentChatRoomName(((TextView)view).getText().toString());
                 }
             });
         }
@@ -172,31 +188,49 @@ public class SelectChatRoomFragment extends Fragment implements View.OnClickList
         if (activity != null) {
             switch (v.getId()) {
                 case R.id.start_chat_room:
-                    creatChatRoom();
+                    createChatRoom();
+                    Fragment fragment = new ChatRoomFragment();
+                    fm.beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack("select_chat_room_fragment").commit();
+                    break;
 
-                    break;
-                case R.id.account_settings_button:
-                    Toast.makeText(getActivity(), R.string.account_delete_error_toast, Toast.LENGTH_SHORT).show();
-                    //Fragment fragment = new AccountSettingsFragment();
-                    //fm.beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack("account_settings_fragment").commit();
-                    break;
+                case R.id.chat_room_list:
+                    Fragment cfragment = new ChatRoomFragment();
+                    fm.beginTransaction().replace(R.id.fragment_container, cfragment).addToBackStack("select_chat_room_fragment").commit();
             }
         }
     }
 
-    private void creatChatRoom(){
+    private void createChatRoom(){
         final String chatRoomName = mNewChatRoomName.getText().toString().trim();
+        infoClass.getInstance().setCurrentChatRoomName(chatRoomName);
 
-        //create a new chatroom subtree with a random key
+
+        //create a new chat room subtree with a random key
         Map<String,Object> map = new HashMap<String, Object>();
         String tempKey = chatRoomSubtree.push().getKey();
         chatRoomSubtree.updateChildren(map);
+        infoClass.getInstance().setCurrentChatRoomKey(tempKey);
+
 
         //save name to it
         Map<String,Object> name = new HashMap<String, Object>();
         name.put("ChatRoomName", chatRoomName);
         chatRoomSubtree.child(tempKey).updateChildren(name);
-        //todo: open chat room
+
+        //save the member to it
+        Map<String,Object> members = new HashMap<String, Object>();
+        members.put("Members", "");
+        chatRoomSubtree.child(tempKey).updateChildren(members);
+
+        Map<String,Object> member = new HashMap<String, Object>();
+        member.put(currentUser, currentUser);
+        chatRoomSubtree.child(tempKey).child("Members").updateChildren(member);
+
+        //create message subtree
+        Map<String,Object> msg = new HashMap<String, Object>();
+        msg.put("Message", "");
+        chatRoomSubtree.child(tempKey).updateChildren(msg);
+
     }
 
 }

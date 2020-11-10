@@ -37,6 +37,11 @@
     <string name="Select_your_chat_room">Select your chat room</string>
     <string name="Start_new_chat_room">Start new chat room</string>
     <string name="Name_new_chat_room">Name of the new chat room</string>
+    <string name="Member_to_invite">Name of the new member</string>
+    <string name="Invite">Invite</string>
+    <string name="New_message">Message</string>
+    <string name="Send">Send</string>
+    <string name="Current_chat">Current chat</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
