@@ -195,19 +195,26 @@ public class SelectChatRoomFragment extends Fragment implements View.OnClickList
 
 
                 case R.id.chat_room_list:
-                    //todo: get the room id and start the chatroom need help here
+                    /*todo: get the room id and start the chatroom need help here.
+                    But the problem is that i don't know how active onitemclicklistener
+                     */
                     //infoClass.getInstance().setCurrentChatRoomKey(((TextView)view).getText().toString());
 
                     //suppose string itemSelected is the selected chatroom
 
                     String itemSelected = "1. test1";
-                    CharacterIterator c = new StringCharacterIterator(itemSelected);
                     int m = 0;
-                    while(c.current() != '.'){
-                        m = m*10 + Integer.valueOf(String.valueOf(c));
-                        c.next();
+                    char[] chars = itemSelected.toCharArray();
+                    for(char ch: chars){
+                        if(ch == '.'){
+                            break;
+                        }
+                        else{
+                            m = m*10 + Integer.valueOf(String.valueOf(ch));
+                        }
                     }
 
+                    infoClass.getInstance().setCurrentChatRoomKey(keyOfChatRoom.get(m));
 
                     Fragment cfragment = new ChatRoomFragment();
                     fm.beginTransaction().replace(R.id.fragment_container, cfragment).addToBackStack("select_chat_room_fragment").commit();
