@@ -2,14 +2,6 @@ package com.group10.cse5236project;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringDef;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,11 +11,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+
 import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
@@ -85,6 +83,7 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
                 //append_chat_conversation(dataSnapshot);
+                //todo: the chatMsg is the newest recieved message, which needs to be converted to vibrate
                 chatMsg = (String) dataSnapshot.child("Msg").getValue();
                 chatUserName = (String) dataSnapshot.child("Name").getValue();
 
@@ -228,6 +227,8 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
                     DatabaseReference messageRoot = currentChatRoomMsgSubtree.child(tempKey);
                     Map<String,Object> msgMap = new HashMap<String, Object>();
                     msgMap.put("Name", userName);
+
+                    //todo: need to use the step counter to generate the message to send
                     msgMap.put("Msg",mInputMessage.getText().toString());
 
                     currentChatRoomMsgSubtree.child(tempKey).updateChildren(msgMap);

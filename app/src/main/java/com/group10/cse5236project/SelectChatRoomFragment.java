@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -48,7 +49,7 @@ public class SelectChatRoomFragment extends Fragment implements View.OnClickList
     private ArrayList<String> list_of_rooms = new ArrayList<>();
     private String currentUser = infoClass.getInstance().getCurrentUserName();
     private DatabaseReference chatRoomSubtree = FirebaseDatabase.getInstance().getReference("Chatrooms");
-    private Map<Integer, String> keyOfChatRoom;
+    private Map<Integer, String> keyOfChatRoom = new HashMap<Integer, String>();
 
 
     @Override
@@ -85,15 +86,16 @@ public class SelectChatRoomFragment extends Fragment implements View.OnClickList
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Set<String> set = new HashSet<String>();
                 Iterator i = dataSnapshot.getChildren().iterator();
+                int m = 1;
                 //Toast.makeText(getActivity(), String.valueOf(s) , Toast.LENGTH_SHORT).show();
 
                 while (i.hasNext()){
                     DataSnapshot currentChatRoom = (DataSnapshot)i.next();
                     String chatRoom = (String) currentChatRoom.child("ChatRoomName").getValue();
                     Iterator j = currentChatRoom.child("Members").getChildren().iterator();
-                    int m = 1;
                     while (j.hasNext()){
                         if(((DataSnapshot)j.next()).getKey().equals(currentUser)){
+                            m++;
                             set.add(String.valueOf(m)+". " + chatRoom);
                             keyOfChatRoom.put(m,(String) currentChatRoom.getKey() );
                         }
@@ -127,7 +129,31 @@ public class SelectChatRoomFragment extends Fragment implements View.OnClickList
             mCreateChatRoomButton.setOnClickListener(this);
         }
         if (mChatRoomListView != null) {
-            mChatRoomListView.setOnItemClickListener((AdapterView.OnItemClickListener) this);
+            mChatRoomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Toast.makeText(getActivity(), "Item clicked : " + position, Toast.LENGTH_SHORT).show();
+
+                    String itemSelected = ((TextView)view).getText().toString();
+                    int m = 0;
+                    char[] chars = itemSelected.toCharArray();
+                    for(char ch: chars){
+                        if(ch == '.'){
+                            break;
+                        }
+                        else{
+                            m = m*10 + Integer.valueOf(String.valueOf(ch));
+                        }
+                    }
+
+                    infoClass.getInstance().setCurrentChatRoomKey(keyOfChatRoom.get(m));
+
+                    Fragment cfragment = new ChatRoomFragment();
+                    FragmentManager fm = getFragmentManager();
+                    fm.beginTransaction().replace(R.id.fragment_container, cfragment).addToBackStack("select_chat_room_fragment").commit();
+
+                }
+            });
         }
 
 
@@ -193,11 +219,11 @@ public class SelectChatRoomFragment extends Fragment implements View.OnClickList
                     fm.beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack("select_chat_room_fragment").commit();
                     break;
 
-
+                /*
                 case R.id.chat_room_list:
                     /*todo: get the room id and start the chatroom need help here.
-                    But the problem is that i don't know how active onitemclicklistener
-                     */
+                    //But the problem is that i don't know how active onitemclicklistener
+
                     //infoClass.getInstance().setCurrentChatRoomKey(((TextView)view).getText().toString());
 
                     //suppose string itemSelected is the selected chatroom
@@ -220,6 +246,8 @@ public class SelectChatRoomFragment extends Fragment implements View.OnClickList
                     fm.beginTransaction().replace(R.id.fragment_container, cfragment).addToBackStack("select_chat_room_fragment").commit();
 
                     break;
+
+                 */
             }
         }
     }
