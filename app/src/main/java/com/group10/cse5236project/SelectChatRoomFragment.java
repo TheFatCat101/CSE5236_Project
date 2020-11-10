@@ -86,7 +86,7 @@ public class SelectChatRoomFragment extends Fragment implements View.OnClickList
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Set<String> set = new HashSet<String>();
                 Iterator i = dataSnapshot.getChildren().iterator();
-                int m = 1;
+                int m = 0;
                 //Toast.makeText(getActivity(), String.valueOf(s) , Toast.LENGTH_SHORT).show();
 
                 while (i.hasNext()){
