@@ -84,13 +84,37 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-                append_chat_conversation(dataSnapshot);
+                //append_chat_conversation(dataSnapshot);
+                chatMsg = (String) dataSnapshot.child("Msg").getValue();
+                chatUserName = (String) dataSnapshot.child("Name").getValue();
+
+                if(chatMsg != null && chatUserName != null){
+                    //note: here are the new message received
+                    mChat.append(chatUserName + " : " + chatMsg + " \n");
+                }
+                /*
+                Iterator i = dataSnapshot.getChildren().iterator();
+
+                while (i.hasNext()) {
+                    DataSnapshot nextMessage = (DataSnapshot) i.next();
+                    chatMsg =  (String) nextMessage.child("Msg").getValue();
+                    chatUserName = (String) nextMessage.child("Name").getValue();
+
+                    if(chatMsg != null && chatUserName != null){
+                        //note: here are the new message received
+                        mChat.append(chatUserName + " : " + chatMsg + " \n");
+                    }
+
+                }
+
+                 */
+
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                append_chat_conversation(dataSnapshot);
+                //append_chat_conversation(dataSnapshot);
 
             }
 
@@ -109,6 +133,8 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
 
             }
 
+
+            /*
             private void append_chat_conversation(DataSnapshot dataSnapshot) {
 
                 Iterator i = dataSnapshot.getChildren().iterator();
@@ -125,6 +151,8 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
 
 
             }
+
+             */
         });
         if (mInviteMember != null) {
             mInviteMember.setOnClickListener(this);
