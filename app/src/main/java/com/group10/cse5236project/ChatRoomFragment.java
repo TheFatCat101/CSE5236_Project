@@ -1,6 +1,12 @@
 package com.group10.cse5236project;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +34,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 
 public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
     private static final String TAG = "ChatRoomFragment";
@@ -47,6 +55,22 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
     private String tempKey;
 
     private String chatMsg,chatUserName;
+
+
+
+
+    /*
+SHAKE DETECTOR STUFF BELOW:
+THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
+ */
+    private static final int SHAKE_THRESHOLD = 800;
+    private long lastUpdate = -1;
+    /*END OF TWEAK-ABLE VARIABLES */
+
+    SensorManager sensorManager;
+    private int shakeCount = 0;
+    float lastX, lastY, lastZ;
+
 
 
     @Override
@@ -71,6 +95,42 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
         mInputMessage = (EditText) v.findViewById(R.id.new_message);
         mSendMessage = (Button) v.findViewById(R.id.send);
         mChat = (TextView) v.findViewById(R.id.current_chat);
+
+        /*
+        SHAKE DETECTOR CODE
+        */
+        //TODO: FIX ME
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        boolean hasAccelSensor = sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        if(!hasAccelSensor){
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Context);
+            // set title
+            alertDialogBuilder.setTitle("Accelerometer Sensor could NOT be found!");
+
+            // set dialog message
+            alertDialogBuilder
+                    .setMessage("Your App MUST quit")
+                    .setCancelable(false)
+                    .setPositiveButton("Quit",new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,int id) {
+                            /*when button clicked, close activity*/
+                            getActivity().finish();
+                        }});
+
+            // create alert dialog
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
+
+
+
+
+
+
+        /*
+        END OF SHAKE DETECTOR CODE
+        */
 
         getActivity().setTitle(chatRoomName);
 
@@ -165,6 +225,47 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
 
     }
 
+    /*
+    SHAKE DETECTOR STUFF BELOW
+    @TODO: FIX ME LATER
+     */
+    private final SensorEventListener mSensorListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent sensorEvent) {
+            if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                long currTime = System.currentTimeMillis();
+                //CHOOSE UPDATE TIME FRAME
+                //chosen to update every 100ms for now
+                if (currTime - lastUpdate > 100) {
+                    long timeDiff = currTime - lastUpdate;
+                    lastUpdate = currTime;
+
+                    float currx = sensorEvent.values[0];
+                    float curry = sensorEvent.values[1];
+                    float currz = sensorEvent.values[2];
+                    float speed = Math.abs(currx + curry + currz - lastX - lastY - lastZ) / timeDiff * 10000;
+
+                    if (speed > SHAKE_THRESHOLD) {
+                        // Shake has been detected
+                        shakeCount++;
+                    }
+                    lastX = currx;
+                    lastY = curry;
+                    lastZ = currz;
+                }
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int i) {
+            //MAYBE RELEVANT IN THE FUTURE
+        }
+    };
+
+    /*
+    END OF SHAKE DETECTOR STUFF HERE
+     */
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -199,6 +300,8 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
     public void onDestroyView() {
         super.onDestroyView();
         Log.d(TAG, "OnDestroyView() called");
+        sensorManager.unregisterListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
+        sensorManager = null;
     }
 
     @Override
@@ -229,8 +332,10 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
                     msgMap.put("Name", userName);
 
                     //todo: need to use the step counter to generate the message to send
+//                    String shakeMessage = Integer.toString(shakeCount);
+//                    msgMap.put("Msg",shakeMessage);
                     msgMap.put("Msg",mInputMessage.getText().toString());
-
+                    //shakeCount = 0;
                     currentChatRoomMsgSubtree.child(tempKey).updateChildren(msgMap);
                     break;
 

@@ -167,3 +167,5 @@ public class NewAccountFragment extends Fragment implements View.OnClickListener
         });
     }
 }
+//accilorometer possibly
+//step counter and vibration sender API
