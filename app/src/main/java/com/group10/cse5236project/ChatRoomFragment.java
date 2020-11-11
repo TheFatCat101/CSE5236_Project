@@ -63,8 +63,8 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
 SHAKE DETECTOR STUFF BELOW:
 THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
  */
-    private static final int SHAKE_THRESHOLD = 800;
-    private long lastUpdate = -1;
+    private static final int SHAKE_THRESHOLD = 300;
+    private long lastShakeTime, lastUpdate = -1;
     /*END OF TWEAK-ABLE VARIABLES */
 
     SensorManager sensorManager;
@@ -101,10 +101,10 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
         */
         //TODO: FIX ME
 
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         boolean hasAccelSensor = sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         if(!hasAccelSensor){
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Context);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity().getApplicationContext());
             // set title
             alertDialogBuilder.setTitle("Accelerometer Sensor could NOT be found!");
 
@@ -234,9 +234,24 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
         public void onSensorChanged(SensorEvent sensorEvent) {
             if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                 long currTime = System.currentTimeMillis();
+
+                if (shakeCount > 0 && currTime - lastShakeTime > 2000) {
+                    Map<String,Object> map = new HashMap<String, Object>();
+                    tempKey = currentChatRoomMsgSubtree.push().getKey();
+                    currentChatRoomMsgSubtree.updateChildren(map);
+
+                    Map<String,Object> msgMap = new HashMap<String, Object>();
+                    msgMap.put("Name", userName);
+
+                    String shakeMessage = Integer.toString(shakeCount);
+                    msgMap.put("Msg",shakeMessage);
+                    shakeCount = 0;
+                    currentChatRoomMsgSubtree.child(tempKey).updateChildren(msgMap);
+                }
+
                 //CHOOSE UPDATE TIME FRAME
                 //chosen to update every 100ms for now
-                if (currTime - lastUpdate > 100) {
+                if (currTime - lastUpdate > 250) {
                     long timeDiff = currTime - lastUpdate;
                     lastUpdate = currTime;
 
@@ -247,6 +262,7 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
 
                     if (speed > SHAKE_THRESHOLD) {
                         // Shake has been detected
+                        lastShakeTime = currTime;
                         shakeCount++;
                     }
                     lastX = currx;
@@ -335,6 +351,7 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
 //                    String shakeMessage = Integer.toString(shakeCount);
 //                    msgMap.put("Msg",shakeMessage);
                     msgMap.put("Msg",mInputMessage.getText().toString());
+                    mInputMessage.setText("");
                     //shakeCount = 0;
                     currentChatRoomMsgSubtree.child(tempKey).updateChildren(msgMap);
                     break;

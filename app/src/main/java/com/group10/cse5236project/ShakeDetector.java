@@ -28,7 +28,8 @@ public class ShakeDetector {
 
 
 
-    public OnCreate(){
+    /*
+    public void OnCreate(){
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         boolean hasAccelSensor = sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         if(!hasAccelSensor){
@@ -42,7 +43,6 @@ public class ShakeDetector {
                     .setCancelable(false)
                     .setPositiveButton("Quit",new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog,int id) {
-                            /*when button clicked, close activity*/
                             currActivity.this.finish();
                         }});
 
@@ -51,6 +51,7 @@ public class ShakeDetector {
             alertDialog.show();
         }
     }
+    */
 
     public void killShakeDetector(){
         sensorManager.unregisterListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
