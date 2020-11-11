@@ -96,42 +96,6 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
         mSendMessage = (Button) v.findViewById(R.id.send);
         mChat = (TextView) v.findViewById(R.id.current_chat);
 
-        /*
-        SHAKE DETECTOR CODE
-        */
-        //TODO: FIX ME
-
-        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
-        boolean hasAccelSensor = sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-        if(!hasAccelSensor){
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity().getApplicationContext());
-            // set title
-            alertDialogBuilder.setTitle("Accelerometer Sensor could NOT be found!");
-
-            // set dialog message
-            alertDialogBuilder
-                    .setMessage("Your App MUST quit")
-                    .setCancelable(false)
-                    .setPositiveButton("Quit",new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,int id) {
-                            /*when button clicked, close activity*/
-                            getActivity().finish();
-                        }});
-
-            // create alert dialog
-            AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
-        }
-
-
-
-
-
-
-        /*
-        END OF SHAKE DETECTOR CODE
-        */
-
         getActivity().setTitle(chatRoomName);
 
         userSubtree = FirebaseDatabase.getInstance().getReference().child("Accounts");
@@ -298,6 +262,27 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
     public void onResume() {
         super.onResume();
         Log.d(TAG, "OnResume() called");
+        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        boolean hasAccelSensor = sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        if(!hasAccelSensor){
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity().getApplicationContext());
+            // set title
+            alertDialogBuilder.setTitle("Accelerometer Sensor could NOT be found!");
+
+            // set dialog message
+            alertDialogBuilder
+                    .setMessage("Your App MUST quit")
+                    .setCancelable(false)
+                    .setPositiveButton("Quit",new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,int id) {
+                            /*when button clicked, close activity*/
+                            getActivity().finish();
+                        }});
+
+            // create alert dialog
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
     }
 
     @Override
@@ -310,14 +295,14 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
     public void onStop() {
         super.onStop();
         Log.d(TAG, "OnStop() called");
+        sensorManager.unregisterListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
+        sensorManager = null;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         Log.d(TAG, "OnDestroyView() called");
-        sensorManager.unregisterListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
-        sensorManager = null;
     }
 
     @Override
