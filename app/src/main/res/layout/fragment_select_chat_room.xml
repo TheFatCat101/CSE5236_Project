@@ -1,44 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SelectChatRoomFragment">
 
-    <TextView
-        android:id="@+id/select_your_chat_room"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:gravity="center"
-        android:text="@string/Select_your_chat_room"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textSize="18sp" />
+        android:layout_height="match_parent">
 
-    <ListView
-        android:id="@+id/chat_room_list"
-        android:layout_width="match_parent"
-        android:layout_height="450dp"
-        android:layout_marginTop="60dp"
-        android:layout_marginBottom="100dp">
+        <ListView
+            android:id="@+id/chat_room_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/new_chat_room_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-    </ListView>
+        </ListView>
 
-    <Button
-        android:id="@+id/start_chat_room"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/Start_new_chat_room"
-        android:textSize="18sp"
-        android:layout_marginTop="600dp"/>
+        <EditText
+            android:id="@+id/new_chat_room_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:autofillHints="New chat room name"
+            android:ems="10"
+            android:hint="@string/Name_new_chat_room"
+            android:inputType="textPersonName"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    <EditText
-        android:id="@+id/new_chat_room_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="530dp"
-        android:autofillHints="New chat room name"
-        android:ems="10"
-        android:hint="@string/Name_new_chat_room"
-        android:inputType="textPersonName" />
+        <Button
+            android:id="@+id/start_chat_room"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="@string/Start_new_chat_room"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

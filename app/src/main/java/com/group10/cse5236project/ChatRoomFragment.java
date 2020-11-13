@@ -96,14 +96,13 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView() called");
         View v = inflater.inflate(R.layout.fragment_chat_room, container, false);
+        getActivity().setTitle((String) chatRoomName);
 
         mInviteMemberName = (EditText) v.findViewById(R.id.member_to_invite);
         mInviteMember = (Button) v.findViewById(R.id.invite);
         mInputMessage = (EditText) v.findViewById(R.id.new_message);
         mSendMessage = (Button) v.findViewById(R.id.send);
         mChat = (TextView) v.findViewById(R.id.current_chat);
-
-        getActivity().setTitle(chatRoomName);
 
         userSubtree = FirebaseDatabase.getInstance().getReference().child("Accounts");
         currentChatRoomSubtree = FirebaseDatabase.getInstance().getReference().child("Chatrooms").child(chatRoomKey);
@@ -258,7 +257,7 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
                     }
                     mSensorHistory[0] = speed;
                     average = (average + speed) / mSensorHistory.length;
-                    mSendMessage.setText("" + average);
+                    //mSendMessage.setText("" + average);
 
                     if (currTime - lastShakeTime > 750 && average > SHAKE_THRESHOLD) {
                         // Shake has been detected

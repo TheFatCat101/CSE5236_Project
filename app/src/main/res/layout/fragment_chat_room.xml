@@ -1,55 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ChatRoomFragment">
 
-    <EditText
-        android:id="@+id/member_to_invite"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:accessibilityLiveRegion="assertive"
-        android:autofillHints="New member name"
-        android:ems="10"
-        android:hint="@string/Member_to_invite"
-        android:inputType="textPersonName" />
-
-    <Button
-        android:id="@+id/invite"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginStart="310dp"
-        android:text="@string/Invite" />
-
-    <EditText
-        android:id="@+id/new_message"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="510dp"
-        android:autofillHints="Message"
-        android:ems="10"
-        android:hint="@string/New_message"
-        android:inputType="textPersonName" />
-
-    <Button
-        android:id="@+id/send"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginStart="310dp"
-        android:layout_marginTop="510dp"
-        android:text="@string/Send" />
-
-    <ScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="440dp"
-        android:layout_marginTop="60dp">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/current_chat"
+        <EditText
+            android:id="@+id/member_to_invite"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="1dp"
+            android:accessibilityLiveRegion="assertive"
+            android:autofillHints="New member name"
+            android:ems="10"
+            android:hint="@string/Member_to_invite"
+            android:inputType="textPersonName"
+            android:textAlignment="viewStart"
+            app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+            app:layout_constraintEnd_toStartOf="@+id/invite"
+            app:layout_constraintHorizontal_bias="0.352"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/invite"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="1dp"
+            android:text="@string/Invite"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ScrollView
+            android:id="@+id/scrollView2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp" />
-    </ScrollView>
+            android:layout_height="440dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/send"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/member_to_invite">
+
+            <TextView
+                android:id="@+id/current_chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp" />
+        </ScrollView>
+
+        <EditText
+            android:id="@+id/new_message"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="1dp"
+            android:autofillHints="Message"
+            android:ems="10"
+            android:hint="@string/New_message"
+            android:inputType="textPersonName"
+            android:textAlignment="viewStart"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/send"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scrollView2"
+            app:layout_constraintVertical_bias="0.827" />
+
+        <Button
+            android:id="@+id/send"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="2dp"
+            android:text="@string/Send"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/new_message"
+            app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
