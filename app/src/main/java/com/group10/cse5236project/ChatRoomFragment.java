@@ -96,7 +96,7 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView() called");
         View v = inflater.inflate(R.layout.fragment_chat_room, container, false);
-        getActivity().setTitle((String) chatRoomName);
+        getActivity().setTitle("Chats");
 
         mInviteMemberName = (EditText) v.findViewById(R.id.member_to_invite);
         mInviteMember = (Button) v.findViewById(R.id.invite);
