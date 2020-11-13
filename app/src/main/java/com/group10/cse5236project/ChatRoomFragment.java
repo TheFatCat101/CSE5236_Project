@@ -8,6 +8,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,6 +46,7 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
     private Button mInviteMember;
     private EditText mInviteMemberName;
     private TextView mChat;
+    private Vibrator mVibrator;
 
     private String userName = infoClass.getInstance().getCurrentUserName();
     private String chatRoomName = infoClass.getInstance().getCurrentChatRoomName();
@@ -70,6 +72,10 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
     SensorManager sensorManager;
     private int shakeCount = 0;
     float lastX, lastY, lastZ;
+
+    /*Vibrator object variables*/
+    //pattern  =   {  delay ms  ,  vibrate ms  }
+    long[] pattern = {    250   ,      250   };
 
 
 
@@ -114,6 +120,17 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
                 if(chatMsg != null && chatUserName != null){
                     //note: here are the new message received
                     mChat.append(chatUserName + " : " + chatMsg + " \n");
+                    int numOfVibrations = 0;
+                    try{
+                        numOfVibrations = Integer.parseInt(chatMsg);
+                    }
+                    catch(Exception e){
+                        Toast.makeText(getActivity(), R.string.message_not_int, Toast.LENGTH_SHORT).show();
+                    }
+                    while(numOfVibrations > 0){
+                        mVibrator.vibrate(pattern, -1);
+                        numOfVibrations--;
+                    }
                 }
                 /*
                 Iterator i = dataSnapshot.getChildren().iterator();
@@ -200,6 +217,9 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
                 long currTime = System.currentTimeMillis();
 
                 if (shakeCount > 0 && currTime - lastShakeTime > 2000) {
+                    /*
+                    MESSAGE SHOULD BE SENT HERE
+                     */
                     Map<String,Object> map = new HashMap<String, Object>();
                     tempKey = currentChatRoomMsgSubtree.push().getKey();
                     currentChatRoomMsgSubtree.updateChildren(map);
@@ -262,6 +282,17 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
     public void onResume() {
         super.onResume();
         Log.d(TAG, "OnResume() called");
+        /*
+        SETUP THE PHONE'S  LOCAL VIBRATOR OBJECT
+         */
+        mVibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+        boolean hasVibrator = sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        if(!hasVibrator){
+            Toast.makeText(getActivity(), R.string.vibrator_not_found, Toast.LENGTH_SHORT).show();
+        }
+        /*
+        SETUP THE PHONE LOCAL ACCELEROMETER
+         */
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         boolean hasAccelSensor = sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         if(!hasAccelSensor){
@@ -328,16 +359,13 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
                     tempKey = currentChatRoomMsgSubtree.push().getKey();
                     currentChatRoomMsgSubtree.updateChildren(map);
 
-                    DatabaseReference messageRoot = currentChatRoomMsgSubtree.child(tempKey);
+//                    DatabaseReference messageRoot = currentChatRoomMsgSubtree.child(tempKey);
                     Map<String,Object> msgMap = new HashMap<String, Object>();
                     msgMap.put("Name", userName);
 
-                    //todo: need to use the step counter to generate the message to send
-//                    String shakeMessage = Integer.toString(shakeCount);
-//                    msgMap.put("Msg",shakeMessage);
+                    //@TODO: need to use the step counter to generate the message to send
                     msgMap.put("Msg",mInputMessage.getText().toString());
                     mInputMessage.setText("");
-                    //shakeCount = 0;
                     currentChatRoomMsgSubtree.child(tempKey).updateChildren(msgMap);
                     break;
 
