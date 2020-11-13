@@ -58,15 +58,16 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
 
     private String chatMsg,chatUserName;
 
-
+    private float mSensorHistory[] = new float[3];
+    private int numOfVibrations;
 
 
     /*
 SHAKE DETECTOR STUFF BELOW:
 THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
  */
-    private static final int SHAKE_THRESHOLD = 300;
-    private long lastShakeTime, lastUpdate = -1;
+    private static final int SHAKE_THRESHOLD = 80;
+    private long lastShakeTime, lastUpdate, lastVibrateTime = -1;
     /*END OF TWEAK-ABLE VARIABLES */
 
     SensorManager sensorManager;
@@ -120,17 +121,17 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
                 if(chatMsg != null && chatUserName != null){
                     //note: here are the new message received
                     mChat.append(chatUserName + " : " + chatMsg + " \n");
-                    int numOfVibrations = 0;
+                    numOfVibrations = 0;
                     try{
                         numOfVibrations = Integer.parseInt(chatMsg);
                     }
                     catch(Exception e){
                         Toast.makeText(getActivity(), R.string.message_not_int, Toast.LENGTH_SHORT).show();
                     }
-                    while(numOfVibrations > 0){
-                        mVibrator.vibrate(pattern, -1);
-                        numOfVibrations--;
-                    }
+                    //while(numOfVibrations > 0){
+                    //    mVibrator.vibrate(pattern, 0);
+                    //    numOfVibrations--;
+                    //}
                 }
                 /*
                 Iterator i = dataSnapshot.getChildren().iterator();
@@ -219,7 +220,7 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
                 if (shakeCount > 0 && currTime - lastShakeTime > 2000) {
                     /*
                     MESSAGE SHOULD BE SENT HERE
-                     */
+                    */
                     Map<String,Object> map = new HashMap<String, Object>();
                     tempKey = currentChatRoomMsgSubtree.push().getKey();
                     currentChatRoomMsgSubtree.updateChildren(map);
@@ -233,9 +234,15 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
                     currentChatRoomMsgSubtree.child(tempKey).updateChildren(msgMap);
                 }
 
+                if (numOfVibrations > 0 && currTime - lastVibrateTime > pattern[0]) {
+                    mVibrator.vibrate(pattern, -1);
+                    lastVibrateTime = currTime;
+                    numOfVibrations--;
+                }
+
                 //CHOOSE UPDATE TIME FRAME
                 //chosen to update every 100ms for now
-                if (currTime - lastUpdate > 250) {
+                if (currTime - lastUpdate > 100) {
                     long timeDiff = currTime - lastUpdate;
                     lastUpdate = currTime;
 
@@ -243,8 +250,17 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
                     float curry = sensorEvent.values[1];
                     float currz = sensorEvent.values[2];
                     float speed = Math.abs(currx + curry + currz - lastX - lastY - lastZ) / timeDiff * 10000;
+                    float average = 0;
 
-                    if (speed > SHAKE_THRESHOLD) {
+                    for (int i = 2; i > 0; i--) {
+                        mSensorHistory[i] = mSensorHistory[i - 1];
+                        average += mSensorHistory[i];
+                    }
+                    mSensorHistory[0] = speed;
+                    average = (average + speed) / 5;
+                    mSendMessage.setText("" + average);
+
+                    if (currTime - lastShakeTime > 750 && average > SHAKE_THRESHOLD) {
                         // Shake has been detected
                         lastShakeTime = currTime;
                         shakeCount++;
@@ -286,10 +302,10 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
         SETUP THE PHONE'S  LOCAL VIBRATOR OBJECT
          */
         mVibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-        boolean hasVibrator = sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-        if(!hasVibrator){
-            Toast.makeText(getActivity(), R.string.vibrator_not_found, Toast.LENGTH_SHORT).show();
-        }
+        //boolean hasVibrator = sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        //if(!hasVibrator){
+        //    Toast.makeText(getActivity(), R.string.vibrator_not_found, Toast.LENGTH_SHORT).show();
+        //}
         /*
         SETUP THE PHONE LOCAL ACCELEROMETER
          */
@@ -366,6 +382,7 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
                     //@TODO: need to use the step counter to generate the message to send
                     msgMap.put("Msg",mInputMessage.getText().toString());
                     mInputMessage.setText("");
+                    //shakeCount = 0;
                     currentChatRoomMsgSubtree.child(tempKey).updateChildren(msgMap);
                     break;
 

@@ -3,6 +3,7 @@
     package="com.group10.cse5236project">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-permission android:name="android.permission.VIBRATE" />
 
