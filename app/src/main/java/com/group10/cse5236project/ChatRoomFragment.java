@@ -66,7 +66,7 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
 SHAKE DETECTOR STUFF BELOW:
 THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
  */
-    private static final int SHAKE_THRESHOLD = 80;
+    private static final int SHAKE_THRESHOLD = 70;
     private long lastShakeTime, lastUpdate, lastVibrateTime = -1;
     /*END OF TWEAK-ABLE VARIABLES */
 
@@ -257,7 +257,7 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
                         average += mSensorHistory[i];
                     }
                     mSensorHistory[0] = speed;
-                    average = (average + speed) / 5;
+                    average = (average + speed) / mSensorHistory.length;
                     mSendMessage.setText("" + average);
 
                     if (currTime - lastShakeTime > 750 && average > SHAKE_THRESHOLD) {
