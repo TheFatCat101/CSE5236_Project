@@ -76,7 +76,7 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
 
     /*Vibrator object variables*/
     //pattern  =   {  delay ms  ,  vibrate ms  }
-    long[] pattern = {    250   ,      250   };
+    long[] pattern = {    0   ,      250   , 500 };
 
 
 
@@ -234,7 +234,7 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
                     currentChatRoomMsgSubtree.child(tempKey).updateChildren(msgMap);
                 }
 
-                if (numOfVibrations > 0 && currTime - lastVibrateTime > pattern[0]) {
+                if (numOfVibrations > 0 && currTime - lastVibrateTime > pattern[2]) {
                     mVibrator.vibrate(pattern, -1);
                     lastVibrateTime = currTime;
                     numOfVibrations--;
