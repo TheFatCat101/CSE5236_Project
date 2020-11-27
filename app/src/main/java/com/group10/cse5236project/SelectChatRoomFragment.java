@@ -132,7 +132,7 @@ public class SelectChatRoomFragment extends Fragment implements View.OnClickList
             mChatRoomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Toast.makeText(getActivity(), "Item clicked : " + position, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getActivity(), "Item clicked : " + position, Toast.LENGTH_SHORT).show();
 
                     String itemSelected = ((TextView)view).getText().toString();
                     int m = 0;

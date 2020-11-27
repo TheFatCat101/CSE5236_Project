@@ -66,7 +66,7 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
 SHAKE DETECTOR STUFF BELOW:
 THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
  */
-    private static final int SHAKE_THRESHOLD = 70;
+    private static final int SHAKE_THRESHOLD = 90;
     private long lastShakeTime, lastUpdate, lastVibrateTime = -1;
     /*END OF TWEAK-ABLE VARIABLES */
 
@@ -125,7 +125,7 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
                         numOfVibrations = Integer.parseInt(chatMsg);
                     }
                     catch(Exception e){
-                        Toast.makeText(getActivity(), R.string.message_not_int, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getActivity(), R.string.message_not_int, Toast.LENGTH_SHORT).show();
                     }
                     //while(numOfVibrations > 0){
                     //    mVibrator.vibrate(pattern, 0);
