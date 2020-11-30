@@ -141,6 +141,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
         final String username = mUsernameEditText.getText().toString().trim();
         infoClass.getInstance().setCurrentUserName(username);
         final String password = mPasswordEditText.getText().toString().trim();
+        Connectivity.checkConnection(getActivity());
         if (!username.equals("") && !password.equals("")) {
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("Accounts").child(username);
             dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -149,6 +150,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
                     if (snapshot.getValue() != null) {
                         if (password.equals(snapshot.getValue().toString())) {
                             Account.getInstance().setUsername(username);
+                            Account.getInstance().setPassword(password);
                             Toast.makeText(getActivity(), R.string.successful_log_in_toast, Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getActivity(), MenuActivity.class);
                             startActivity(intent);

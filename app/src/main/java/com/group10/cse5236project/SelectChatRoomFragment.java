@@ -71,6 +71,8 @@ public class SelectChatRoomFragment extends Fragment implements View.OnClickList
 
         getActivity().setTitle("Select chat room");
 
+        Connectivity.checkConnection(getActivity());
+
         mCreateChatRoomButton = (Button) v.findViewById(R.id.start_chat_room);
         mChatRoomListView= (ListView) v.findViewById(R.id.chat_room_list);
         mNewChatRoomName = (EditText) v.findViewById(R.id.new_chat_room_name);
@@ -214,9 +216,11 @@ public class SelectChatRoomFragment extends Fragment implements View.OnClickList
         if (activity != null) {
             switch (v.getId()) {
                 case R.id.start_chat_room:
-                    createChatRoom();
-                    Fragment fragment = new ChatRoomFragment();
-                    fm.beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack("select_chat_room_fragment").commit();
+                    if (Connectivity.checkConnection(getActivity())) {
+                        createChatRoom();
+                        Fragment fragment = new ChatRoomFragment();
+                        fm.beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack("select_chat_room_fragment").commit();
+                    }
                     break;
 
                 /*

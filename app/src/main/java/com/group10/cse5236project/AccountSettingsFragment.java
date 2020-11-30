@@ -134,13 +134,15 @@ public class AccountSettingsFragment extends Fragment implements View.OnClickLis
     private void updatePassword() {
         final String currentPassword = mCurrentPasswordEditText.getText().toString().trim();
         final String newPassword = mNewPasswordEditText.getText().toString().trim();
+        Connectivity.checkConnection(getActivity());
         if (!currentPassword.equals("") && !newPassword.equals("")) {
             final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("Accounts").child(Account.getInstance().getUsername());
             dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (currentPassword.equals(snapshot.getValue().toString())) {
+                    if (currentPassword.equals(Account.getInstance().getPassword())) {
                         dbRef.setValue(newPassword);
+                        Account.getInstance().setPassword(newPassword);
                         Toast.makeText(getActivity(), R.string.password_changed_toast, Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getActivity(), R.string.incorrect_password_toast, Toast.LENGTH_SHORT).show();
@@ -159,12 +161,13 @@ public class AccountSettingsFragment extends Fragment implements View.OnClickLis
 
     private void deleteAccount() {
         final String password = mCurrentPasswordEditText.getText().toString().trim();
+        Connectivity.checkConnection(getActivity());
         if (!password.equals("")) {
             final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("Accounts").child(Account.getInstance().getUsername());
             dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (password.equals(snapshot.getValue().toString())) {
+                    if (password.equals(Account.getInstance().getPassword())) {
                         dbRef.removeValue();
                         Toast.makeText(getActivity(), R.string.account_deleted_toast, Toast.LENGTH_SHORT).show();
                         Account.getInstance().clear();

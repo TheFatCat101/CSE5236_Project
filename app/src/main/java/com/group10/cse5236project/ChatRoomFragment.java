@@ -35,8 +35,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static androidx.core.content.ContextCompat.getSystemService;
-
 
 public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
     private static final String TAG = "ChatRoomFragment";
@@ -58,21 +56,17 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
 
     private String chatMsg,chatUserName;
 
-    private float mSensorHistory[] = new float[3];
+    private static final int MIN_TIME_BETWEEN_SHAKES = 300;
+    private static final float ACCEL_THRESHOLD = 5f;
+    private float mMeasurementsTotal = 0,  mMeasurementsCount = 0;
     private int numOfVibrations;
+    private boolean mIsShaking = false;
 
-
-    /*
-SHAKE DETECTOR STUFF BELOW:
-THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
- */
-    private static final int SHAKE_THRESHOLD = 90;
     private long lastShakeTime, lastUpdate, lastVibrateTime = -1;
     /*END OF TWEAK-ABLE VARIABLES */
 
     SensorManager sensorManager;
     private int shakeCount = 0;
-    float lastX, lastY, lastZ;
 
     /*Vibrator object variables*/
     //pattern  =   {  delay ms  ,  vibrate ms  }
@@ -97,6 +91,8 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
         Log.d(TAG, "onCreateView() called");
         View v = inflater.inflate(R.layout.fragment_chat_room, container, false);
         getActivity().setTitle("Chats");
+
+        Connectivity.checkConnection(getActivity());
 
         mInviteMemberName = (EditText) v.findViewById(R.id.member_to_invite);
         mInviteMember = (Button) v.findViewById(R.id.invite);
@@ -127,28 +123,7 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
                     catch(Exception e){
                         //Toast.makeText(getActivity(), R.string.message_not_int, Toast.LENGTH_SHORT).show();
                     }
-                    //while(numOfVibrations > 0){
-                    //    mVibrator.vibrate(pattern, 0);
-                    //    numOfVibrations--;
-                    //}
                 }
-                /*
-                Iterator i = dataSnapshot.getChildren().iterator();
-
-                while (i.hasNext()) {
-                    DataSnapshot nextMessage = (DataSnapshot) i.next();
-                    chatMsg =  (String) nextMessage.child("Msg").getValue();
-                    chatUserName = (String) nextMessage.child("Name").getValue();
-
-                    if(chatMsg != null && chatUserName != null){
-                        //note: here are the new message received
-                        mChat.append(chatUserName + " : " + chatMsg + " \n");
-                    }
-
-                }
-
-                 */
-
             }
 
             @Override
@@ -172,27 +147,6 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
             public void onCancelled(DatabaseError databaseError) {
 
             }
-
-
-            /*
-            private void append_chat_conversation(DataSnapshot dataSnapshot) {
-
-                Iterator i = dataSnapshot.getChildren().iterator();
-
-                //note: here are the new message received
-
-                while (i.hasNext()) {
-                    DataSnapshot nextMessage = (DataSnapshot) i.next();
-                    chatMsg =  (String) nextMessage.child("Msg").getValue();
-                    chatUserName = (String) nextMessage.child("Name").getValue();
-
-                    mChat.append(chatUserName + " : " + chatMsg + " \n");
-                }
-
-
-            }
-
-             */
         });
         if (mInviteMember != null) {
             mInviteMember.setOnClickListener(this);
@@ -213,8 +167,10 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
     private final SensorEventListener mSensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            if (sensorEvent.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
                 long currTime = System.currentTimeMillis();
+                mMeasurementsTotal += (float) Math.sqrt(Math.pow(sensorEvent.values[0], 2) + Math.pow(sensorEvent.values[1], 2) + Math.pow(sensorEvent.values[2], 2));
+                mMeasurementsCount++;
 
                 if (shakeCount > 0 && currTime - lastShakeTime > 2000) {
                     /*
@@ -239,34 +195,23 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
                     numOfVibrations--;
                 }
 
-                //CHOOSE UPDATE TIME FRAME
-                //chosen to update every 100ms for now
-                if (currTime - lastUpdate > 100) {
-                    long timeDiff = currTime - lastUpdate;
+                if (currTime - lastUpdate > 25) {
                     lastUpdate = currTime;
 
-                    float currx = sensorEvent.values[0];
-                    float curry = sensorEvent.values[1];
-                    float currz = sensorEvent.values[2];
-                    float speed = Math.abs(currx + curry + currz - lastX - lastY - lastZ) / timeDiff * 10000;
-                    float average = 0;
+                    float accel = mMeasurementsTotal / mMeasurementsCount;
+                    mMeasurementsTotal = 0;
+                    mMeasurementsCount = 0;
 
-                    for (int i = 2; i > 0; i--) {
-                        mSensorHistory[i] = mSensorHistory[i - 1];
-                        average += mSensorHistory[i];
+                    if (accel > ACCEL_THRESHOLD / 3) {
+                        if (!mIsShaking && currTime - lastShakeTime > MIN_TIME_BETWEEN_SHAKES && accel > ACCEL_THRESHOLD) {
+                            // Shake has been detected
+                            mIsShaking = true;
+                            lastShakeTime = currTime;
+                            shakeCount++;
+                        }
+                    } else {
+                        mIsShaking = false;
                     }
-                    mSensorHistory[0] = speed;
-                    average = (average + speed) / mSensorHistory.length;
-                    //mSendMessage.setText("" + average);
-
-                    if (currTime - lastShakeTime > 750 && average > SHAKE_THRESHOLD) {
-                        // Shake has been detected
-                        lastShakeTime = currTime;
-                        shakeCount++;
-                    }
-                    lastX = currx;
-                    lastY = curry;
-                    lastZ = currz;
                 }
             }
         }
@@ -309,7 +254,7 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
         SETUP THE PHONE LOCAL ACCELEROMETER
          */
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
-        boolean hasAccelSensor = sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        boolean hasAccelSensor = sensorManager.registerListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION), SensorManager.SENSOR_DELAY_GAME);
         if(!hasAccelSensor){
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity().getApplicationContext());
             // set title
@@ -341,7 +286,7 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
     public void onStop() {
         super.onStop();
         Log.d(TAG, "OnStop() called");
-        sensorManager.unregisterListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER));
+        sensorManager.unregisterListener(mSensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION));
         sensorManager = null;
     }
 
@@ -434,42 +379,6 @@ THE FOLLOWING VALUES ARE OPEN TO BE TWEAKED FOR BETTER PERFORMANCE
 
                         }
                     });
-
-
-
-                    /*
-                    //check if user is in chat room
-                    if(isUser == true){
-                        Toast.makeText(getActivity(), "exists" , Toast.LENGTH_SHORT).show();
-
-                        currentChatRoomSubtree.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                Iterator i = snapshot.child("Members").getChildren().iterator();
-                                while(i.hasNext()){
-                                    if(((DataSnapshot) i.next()).getKey().equals(newMember)){
-                                        Toast.makeText(getActivity(), "This user is already in chat room" , Toast.LENGTH_SHORT).show();
-                                    }
-                                    else{
-                                        currentChatRoomSubtree.child("Members").updateChildren(memberMap);
-                                        Toast.makeText(getActivity(), (newMember + " is in chat room now") , Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });
-
-
-                    }
-                    else {
-                        Toast.makeText(getActivity(), "User not exist." , Toast.LENGTH_SHORT).show();
-                    }
-
-                    */
                     break;
             }
         }
