@@ -56,8 +56,8 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
 
     private String chatMsg,chatUserName;
 
-    private static final int MIN_TIME_BETWEEN_SHAKES = 300;
-    private static final float ACCEL_THRESHOLD = 5f;
+    //private static final int MIN_TIME_BETWEEN_SHAKES = 300;
+    private static final float ACCEL_THRESHOLD = 4f;
     private float mMeasurementsTotal = 0,  mMeasurementsCount = 0;
     private int numOfVibrations;
     private boolean mIsShaking = false;
@@ -172,10 +172,11 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
                 mMeasurementsTotal += (float) Math.sqrt(Math.pow(sensorEvent.values[0], 2) + Math.pow(sensorEvent.values[1], 2) + Math.pow(sensorEvent.values[2], 2));
                 mMeasurementsCount++;
 
-                if (shakeCount > 0 && currTime - lastShakeTime > 2000) {
+                if (shakeCount > 0 && !mIsShaking && currTime - lastShakeTime > 2000) {
                     /*
                     MESSAGE SHOULD BE SENT HERE
                     */
+                    Log.d(TAG, "Sending " + shakeCount + " shakes.");
                     Map<String,Object> map = new HashMap<String, Object>();
                     tempKey = currentChatRoomMsgSubtree.push().getKey();
                     currentChatRoomMsgSubtree.updateChildren(map);
@@ -195,7 +196,7 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
                     numOfVibrations--;
                 }
 
-                if (currTime - lastUpdate > 25) {
+                if (currTime - lastUpdate > 30) {
                     lastUpdate = currTime;
 
                     float accel = mMeasurementsTotal / mMeasurementsCount;
@@ -203,7 +204,7 @@ public class ChatRoomFragment extends Fragment implements  View.OnClickListener{
                     mMeasurementsCount = 0;
 
                     if (accel > ACCEL_THRESHOLD / 3) {
-                        if (!mIsShaking && currTime - lastShakeTime > MIN_TIME_BETWEEN_SHAKES && accel > ACCEL_THRESHOLD) {
+                        if (!mIsShaking && accel > ACCEL_THRESHOLD) {
                             // Shake has been detected
                             mIsShaking = true;
                             lastShakeTime = currTime;
