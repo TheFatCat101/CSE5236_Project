@@ -15,15 +15,15 @@ import com.google.firebase.database.ValueEventListener;
 public class Connectivity {
 
     public static boolean checkConnection(final Context context) {
-        final boolean[] result = {false};
+        final boolean[] result = {true};
         DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
         connectedRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 boolean connected = snapshot.getValue(Boolean.class);
                 if (connected) {
-                    result[0] = true;
                 } else {
+                    result[0] = false;
                     Toast.makeText(context, "No connection to server!", Toast.LENGTH_SHORT).show();
                 }
             }

@@ -134,7 +134,7 @@ public class AccountSettingsFragment extends Fragment implements View.OnClickLis
     private void updatePassword() {
         final String currentPassword = mCurrentPasswordEditText.getText().toString().trim();
         final String newPassword = mNewPasswordEditText.getText().toString().trim();
-        Connectivity.checkConnection(getActivity());
+        //Connectivity.checkConnection(getActivity());
         if (!currentPassword.equals("") && !newPassword.equals("")) {
             final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("Accounts").child(Account.getInstance().getUsername());
             dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -161,7 +161,7 @@ public class AccountSettingsFragment extends Fragment implements View.OnClickLis
 
     private void deleteAccount() {
         final String password = mCurrentPasswordEditText.getText().toString().trim();
-        Connectivity.checkConnection(getActivity());
+        //Connectivity.checkConnection(getActivity());
         if (!password.equals("")) {
             final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("Accounts").child(Account.getInstance().getUsername());
             dbRef.addListenerForSingleValueEvent(new ValueEventListener() {

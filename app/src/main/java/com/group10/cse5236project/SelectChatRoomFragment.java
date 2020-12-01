@@ -71,7 +71,7 @@ public class SelectChatRoomFragment extends Fragment implements View.OnClickList
 
         getActivity().setTitle("Select chat room");
 
-        Connectivity.checkConnection(getActivity());
+        //Connectivity.checkConnection(getActivity());
 
         mCreateChatRoomButton = (Button) v.findViewById(R.id.start_chat_room);
         mChatRoomListView= (ListView) v.findViewById(R.id.chat_room_list);

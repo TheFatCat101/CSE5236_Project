@@ -141,7 +141,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
         final String username = mUsernameEditText.getText().toString().trim();
         infoClass.getInstance().setCurrentUserName(username);
         final String password = mPasswordEditText.getText().toString().trim();
-        Connectivity.checkConnection(getActivity());
+        //Connectivity.checkConnection(getActivity());
         if (!username.equals("") && !password.equals("")) {
             DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("Accounts").child(username);
             dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
